@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
+    <title>Autenticación social en Firebase</title>
+</head>
+
+<body>
+    <h1>Autenticación social en Firebase</h1>
+    <button id="login">
+        <i class="fas fa-sign-in-alt"></i>
+        Entra con
+        <i class="fab fa-github"></i>
+    </button>
+    <div id="login-message"></div>
+    <p id="session-message"></p>
+    <!-- JavaScript -->
+    <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script>
+    <script>
+        ;
+        ((d, f) => {
+            const config = {
+                apiKey: "AIzaSyCmR0YLhO-s1tdVlW48TvczbqkKmN5hKGc",
+                authDomain: "practica-firebase-1a43c.firebaseapp.com",
+                databaseURL: "https://practica-firebase-1a43c.firebaseio.com",
+                projectId: "practica-firebase-1a43c",
+                storageBucket: "practica-firebase-1a43c.appspot.com",
+                messagingSenderId: "55386506176"
+            }
+
+            f.initializeApp(config)
+
+            //https://firebase.google.com/docs/auth/
+            // Especificamos cual va a ser el proveedor de inicio de sesion
+            const provider = new f.auth.GithubAuthProvider(),
+
+                // Hay una variable que nos devuelve true o false en caso de que haya (o no) un usuario conectado
+                user = f.auth.currentUser,
+                loginMessage = d.getElementById('login-message'),
+                authMessage = d.getElementById('session-message')
+
+            //Validamos si el usuario esta autenticado
+            f.auth().onAuthStateChanged(user => {
+                console.log(user)
+                if (user) {
+                    console.log('Usuario autenticado')
+                    authMessage.innerHTML = `
+                        <p>Si ves este contenido, es porque estas <b>logueado</b></p>
+                        <button id="logout">Salir</button>
+                    `
+                } else {
+                    console.log('Usuario NO autenticado')
+                    authMessage.innerHTML = `
+                        <p>El contenido de esta seccion es para <b>usuarios registrados</b></p>
+                    `
+                }
+            })
+
+            //Para validar la autenticacion al presionar el boton 'entrar'
+            d.addEventListener('click', e => {
+                if (e.target.matches('#login')) {
+                    //Para desencadenar la autenticacion de redes sociales usamos el metodo 'signInWithPopup' y nos pedira como referencia el proveedor de la aplicacion que lo tenemos guardado en la variable provider. Luego mostraremos los resultados en pantalla.
+                    f.auth().signInWithPopup(provider)
+                        .then(result => {
+                            loginMessage.innerHTML = `<p class="ok"><b>${result.user.email}</b> ha iniciado sesión con GitHub.</p>
+                            <img src="${result.user.photoURL}">`
+                            console.log(result)
+                        })
+                        .catch(err => {
+                            loginMessage.innerHTML = `<p class="error">Error de Autenticación con GitHub ${err.code}: <b>${err.message}</b>.</p>`
+                            console.log(err)
+                        })
+                }
+                //Para desloguearnos vamos a ejecutar un metodo de la autenticación de Firebase que se llama 'signOut'.
+                if (e.target.matches('#logout')) {
+                    f.auth().signOut()
+                        .then(() => {
+                            loginMessage.innerHTML = `<p>Sesión terminada</p>`
+                        })
+                }
+            })
+
+        })(document, firebase)
+    </script>
+</body>
+
+</html>

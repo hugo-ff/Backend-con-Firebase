@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>CRUD con Firebase</title>
+</head>
+
+<body>
+    <h1>CRUD con Firebase</h1>
+    <h2>Lista de contactos</h2>
+    <h3>Create / Update</h3>
+    <form>
+        <input type="text" id="name" placeholder="Tu nombre" required>
+        <br><br>
+        <input type="text" id="email" placeholder="Tu email" required>
+        <br><br>
+        <input type="hidden" id="id">
+        <input type="submit" value="Guardar">
+    </form>
+    <h3>Read / Delete</h3>
+    <ul id="contacts"></ul>
+    <!-- JavaScript -->
+    <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script>
+    <script>
+        ;
+        ((d, f) => {
+            const config = {
+                apiKey: "AIzaSyCmR0YLhO-s1tdVlW48TvczbqkKmN5hKGc",
+                authDomain: "practica-firebase-1a43c.firebaseapp.com",
+                databaseURL: "https://practica-firebase-1a43c.firebaseio.com",
+                projectId: "practica-firebase-1a43c",
+                storageBucket: "practica-firebase-1a43c.appspot.com",
+                messagingSenderId: "55386506176"
+            }
+
+            f.initializeApp(config)
+
+            const db = f.database(),
+                contactsRef = db.ref().child('contacts'),
+                contactsForm = d.forms[0],
+                contactName = d.getElementById('name'),
+                contactEmail = d.getElementById('email'),
+                contactId = d.getElementById('id'),
+                contacts = d.getElementById('contacts')
+
+            //Esta funcion va a tomar los datos que vengan en el objeto data de la referencia y nos va a permitir mostrar en el front-end esos datos que estan en la db.
+            function contactTemplate({
+                name,
+                email
+            }) {
+                return `
+                    <span class="name">${name}</span>
+                    -
+                    <span class="email">${email}</span>
+                    <button class="edit">Editar</button>
+                    <button class="delete">Eliminar</button>
+                `
+            }
+
+            //CREATE
+            contactsForm.addEventListener('submit', e => {
+                e.preventDefault()
+                    // alert('Procesando formulario...')
+
+                //Si no existe un ID entonces creamos uno con el metodo push
+                let id = contactId.value || contactsRef.push().key,
+                    contactData = {
+                        name: contactName.value,
+                        email: contactEmail.value
+                    },
+                    updateData = {}
+
+                //Si el objeto updateData tiene un ID (preexistente o creado por el usuario al ingresar los datos desde el formulario) entonces llenarlo con el contenido del objeto contactData cuyos valores provienen de lo ingresado en el form.    
+                updateData[`/${id}`] = contactData
+
+                //El metodo 'update()' de firebase nos permite actualizar la referencia 
+                contactsRef.update(updateData)
+
+                //Reseteamos el formulario una vez enviado
+                contactId.value = ''
+                contactsForm.reset()
+            })
+
+            //READ
+            //Mostrar el registro en pantalla cuando se agrega uno nuevo
+            contactsRef.on('child_added', data => {
+                let li = d.createElement('li')
+
+                li.id = data.key
+                li.innerHTML = contactTemplate(data.val())
+                contacts.appendChild(li)
+            })
+
+            //Mostrar en pantalla los cambios hechos en un registro
+            contactsRef.on('child_changed', data => {
+                let affectedNode = d.getElementById(data.key)
+                affectedNode.innerHTML = contactTemplate(data.val())
+            })
+
+            //Eliminar de la pantalla el registro 
+            contactsRef.on('child_removed', data => {
+                let affectedNode = d.getElementById(data.key)
+                contacts.removeChild(affectedNode)
+            })
+
+            //En lugar de tener un listener por cada boton 'editar' o 'eliminar' lo que hacemos es poner un listener en el evento padre (el document) y mediante 'matches' hacemos un condicional que determinará que se desencadenara un evento siempre que el elemento clickeado tenga la clase especificada.
+
+            d.addEventListener('click', e => {
+                //Capturamos en una variable el nodo que queremos afectar, es decir el list item que tiene el ID.
+                let affectedNode = e.target.parentElement
+
+                //UPDATE
+                if (e.target.matches('button.edit')) {
+                    // Obtenemos los datos del registro que pretendemos actualizar y los mostramos en el formulario. Se guardara en el mismo registro porque el id (que está oculto) sigue siendo el mismo.
+                    contactName.value = affectedNode.querySelector('.name').innerText
+                    contactEmail.value = affectedNode.querySelector('.email').innerText
+                    contactId.value = affectedNode.id
+                }
+
+                //DELETE
+                if (e.target.matches('button.delete')) {
+                    // Capturamos el 'id' del elemento que queremos eliminar
+                    let id = affectedNode.id
+
+                    // Ejecutamos la referencia con el metodo 'remove' para eliminar el registro.
+                    db.ref(`contacts/${id}`).remove()
+                }
+            })
+
+        })(document, firebase)
+    </script>
+</body>
+
+</html>

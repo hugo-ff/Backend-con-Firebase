@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Almacenamiento Firebase</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #progress-bar {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 50%;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Almacenamiento Firebase</h1>
+    <progress value="0" max="100" id="progress-bar"></progress>
+    <form id="upload">
+        <input type="file" id="uploader" multiple>
+    </form>
+    <span id="progress-advance"></span>
+    <div id="output"></div>
+    <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
+    <script>
+        ;
+        ((d, f) => {
+            const config = {
+                apiKey: "AIzaSyCmR0YLhO-s1tdVlW48TvczbqkKmN5hKGc",
+                authDomain: "practica-firebase-1a43c.firebaseapp.com",
+                databaseURL: "https://practica-firebase-1a43c.firebaseio.com",
+                projectId: "practica-firebase-1a43c",
+                storageBucket: "practica-firebase-1a43c.appspot.com",
+                messagingSenderId: "55386506176"
+            }
+            f.initializeApp(config)
+
+            //Inicializamos el uso del storage
+            const storage = f.storage(),
+
+                //Creamos la referencia de la cubeta donde van a caer nuestros objetos
+                bucket = storage.ref(),
+
+                //Creamos una carpeta dentro de la cubeta principal
+                imgRef = bucket.child('img'),
+
+                //Guardamos en variables los elementos HTML
+                form = d.getElementById('upload'),
+                uploader = d.getElementById('uploader'),
+                progressBar = d.getElementById('progress-bar'),
+                output = d.getElementById('output'),
+                progressAdvance = d.getElementById('progress-advance')
+
+            //Funcion para guardar los archivos en la base de datos
+            function saveFileInDB(url) {
+                let fileRef = f.database().ref().child('files')
+
+                //Pasamos la url por el metodo push para que genere el UID para el objeto que subimos
+                fileRef.push({
+                    url
+                })
+            }
+
+            console.log(bucket)
+
+            output.innerHTML = ''
+
+            uploader.addEventListener('change', e => {
+                console.log(e.target.files)
+
+                //Por cada elemento que yo suba se va a ejecutar el siguiente codigo
+                Array.from(e.target.files).forEach(file => {
+                    console.log('Subiendo archivo')
+                    console.log(file)
+
+                    //Creamos una variable donde especificamos cual va a ser la ubicacion en el storage de Firebase del archivo que estamos subiendo
+                    let uploadTask = imgRef.child(file.name).put(file)
+
+                    //Para controlar el estado de la carga del archivo
+                    uploadTask.on('state_changed', data => {
+                        let progress = Math.floor((data.bytesTransferred / data.totalBytes) * 100)
+                        progressBar.value = progress
+                        progressAdvance.innerHTML = `${progress} %`
+                        console.log(progress)
+                    }, err => {
+                        console.log(err)
+                        console.log(err.code, err.message)
+                        progressAdvance.innerHTML = `${err.code} - ${err.message}`
+                    }, () => {
+                        //Esto se va a ejecutar independientemente de si fue exitoso o erroneo la subida de los archivos
+                        let fileRef = imgRef.child(file.name)
+
+                        fileRef.getDownloadURL()
+                            .then(url => {
+                                console.log(url)
+                                progressAdvance.innerHTML = `Transferencia completada.`
+                                if (file.type.match('image.*')) {
+                                    output.innerHTML += `<img src="${url}">`
+                                } else {
+                                    output.innerHTML += `<p>Tu archivo se ha subido, puedes verlo <a href="${url}" target="_blank">aquí</a></p>`
+                                }
+
+                                //Guardamos el archivo en la base de datos
+                                saveFileInDB(url)
+                            })
+                    })
+                })
+                form.reset()
+            })
+        })(document, firebase);
+    </script>
+</body>
+
+</html>

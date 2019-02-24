@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Hola Mundo con Firebase</title>
+</head>
+
+<body>
+    <h1 id="hola"></h1>
+    <!-- JavaScript -->
+    <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script>
+    <script>
+        // Inicializa Firebase
+        var config = {
+            apiKey: "AIzaSyCmR0YLhO-s1tdVlW48TvczbqkKmN5hKGc",
+            authDomain: "practica-firebase-1a43c.firebaseapp.com",
+            databaseURL: "https://practica-firebase-1a43c.firebaseio.com",
+            projectId: "practica-firebase-1a43c",
+            storageBucket: "practica-firebase-1a43c.appspot.com",
+            messagingSenderId: "55386506176"
+        }
+        firebase.initializeApp(config)
+
+        const hola = document.getElementById('hola'),
+            //Instanciamos la DB
+            db = firebase.database(),
+            //Guardamos la referencia del nodo de nuestra base de datos 
+            refText = db.ref().child('text')
+
+        console.log(db, refText)
+            //Este evento 'value' detecta que cada vez que haya un cambio en la referencia, en el nodo de la base de datos, me permita actualizar la vista de la aplicacion en tiempo real
+        refText.on('value', data => {
+            hola.innerText = data.val()
+        })
+
+        db.ref().child('data-push').push({
+            message: 'Hola Firebase. Insertando datos con el método push.'
+        })
+        db.ref().child('data-set').set({
+            message: 'Hola Firebase. Insertando datos con el método set.'
+        })
+        db.ref().child('data-set-push').push().set({
+            message: 'Hola Firebase. Insertando datos con ambos métodos.'
+        })
+    </script>
+</body>
+
+</html>

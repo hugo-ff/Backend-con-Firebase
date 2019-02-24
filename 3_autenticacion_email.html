@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Autenticación con email en Firebase</title>
+</head>
+
+<body>
+    <h1>Autenticación con email en Firebase</h1>
+    <h2>Registro de Usuarios (Sign in)</h2>
+    <form id="signin">
+        <input type="text" name="name" placeholder="Tu nombre" required>
+        <br>
+        <input type="email" name="email" placeholder="Tu email" required>
+        <br>
+        <input type="password" name="password" placeholder="Tu contraseña" required>
+        <br>
+        <input type="submit" value="Registrar">
+    </form>
+    <div id="signin-message"></div>
+    <h2>Inicio de Sesión (Log in)</h2>
+    <form id="login">
+        <input type="email" name="email" placeholder="Tu email" required>
+        <br>
+        <input type="password" name="password" placeholder="Tu contraseña" required>
+        <br>
+        <input type="submit" value="Ingresar">
+    </form>
+    <div id="login-message"></div>
+    <p id="session-message"></p>
+    <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
+    <script>
+        ;
+        ((d, f) => {
+            const config = {
+                apiKey: "AIzaSyCmR0YLhO-s1tdVlW48TvczbqkKmN5hKGc",
+                authDomain: "practica-firebase-1a43c.firebaseapp.com",
+                databaseURL: "https://practica-firebase-1a43c.firebaseio.com",
+                projectId: "practica-firebase-1a43c",
+                storageBucket: "practica-firebase-1a43c.appspot.com",
+                messagingSenderId: "55386506176"
+            }
+            f.initializeApp(config)
+
+            //Inicializamos el servicio de autenticacion de Firebase
+            const auth = f.auth(),
+                //El objeto auth devuelve una propiedad 'currentUser' que es el objeto del usuario que se esta conectando al servicio de Firebase.
+                user = auth.currentUser,
+                authMessage = d.getElementById('session-message'),
+                formSignin = d.getElementById('signin'),
+                formLogin = d.getElementById('login')
+
+            function createUserInDB(uid, name, email) {
+                //Para guardar datos en la BD de Firebase hay que acceder a una referencia, que crearemos a continuacion
+                let usersRef = f.database().ref().child('users')
+
+                //Creamos un ID para la referencia 'users' con ese mismo ID que el servicio de autenticacion nos esta dando.
+                usersRef.child(uid).set({
+                    name,
+                    email
+                })
+            }
+
+            //Levantamos el metodo que permite revisar en tiempo real si hay un cambio con el estado de la autenticacion. Este metodo trabaja una callback que nos da todos los datos del usuario.
+
+            auth.onAuthStateChanged(user => {
+                console.log(user)
+                if (user) {
+                    authMessage.innerHTML = `
+                        <p>Si ves este contenido, es por que estás <b>logueado</b></p>
+                        <button id="logout">Salir</button>
+                    `
+                } else {
+                    authMessage.innerHTML = `
+                        <p>El contenido de esta sección es para <b>usuarios registrados</b></p>
+                    `
+                }
+            })
+
+            formSignin.addEventListener('submit', e => {
+                e.preventDefault()
+                alert('Registrandose...')
+
+                //El mensaje para saber si un correo se creo (o no) dentro del servicio de autenticacion con correo electronico de Firebase sera capturado en el elemento con id 'signin-message'.
+                let message = d.getElementById('signin-message')
+
+                //Ejecutamos el servicio de autenticacion de Firebase para crear un usuario
+                auth.createUserWithEmailAndPassword(
+                        e.target.email.value,
+                        e.target.password.value
+                    )
+                    .then(res => {
+                        console.log(res)
+                        console.log(res.user)
+                            //Insertar el usuario en la base de datos
+                        createUserInDB(
+                            //El ID asociado, generado automaticamente, al nuevo usuario creado
+                            res.user.uid,
+                            //El nombre que fue introducido en el formulario
+                            e.target.name.value,
+                            //El correo que fue introducido en el formulario
+                            e.target.email.value
+
+                        )
+                        message.innerHTML = `<p class="ok">Usuario creado con el correo <b>${e.target.email.value}</b>.</p>`
+                        e.target.reset()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        message.innerHTML = `<p class="error">La cuenta de correo <b>${e.target.email.value}</b> ya existe. Intenta con otra.</p>`
+                        e.target.name.focus()
+                    })
+
+            })
+
+            formLogin.addEventListener('submit', e => {
+                e.preventDefault()
+
+                let message = d.getElementById('login-message')
+
+                //Ejecutamos el servicio de autenticacion de Firebase para loguearse con un usuario ya creado.
+                auth.signInWithEmailAndPassword(
+                        e.target.email.value,
+                        e.target.password.value
+                    )
+                    //Si el usuario se loguea correctamente entonces la promesa nos devuelve el usuario que se esta conectando.
+                    .then(user => {
+                        console.log(user)
+                        message.innerHTML = `<p class="ok">Usuario logueado con el correo <b>${e.target.email.value}</b>.</p>`
+                        e.target.reset()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        message.innerHTML = `<p class="error">Correo electrónico o password no son válidos. Verifica nuevamente tus datos</p>`
+                        e.target.focus()
+                    })
+
+            })
+
+            d.addEventListener('click', e => {
+                if (e.target.matches('#logout')) {
+                    auth.signOut()
+                        .then(() => {
+                            console.log('Sesión terminada')
+                            authMessage.innerHTML = `<p>Sesión terminada</p>`
+                        })
+                }
+            })
+
+        })(document, firebase);
+    </script>
+</body>
+
+</html>

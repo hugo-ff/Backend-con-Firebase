@@ -96,11 +96,11 @@ http-server
 
 _Este proyecto contiene 5 simples aplicativos que sirven para comprender el uso de Firebase:_
 
-- [Hola Mundo desde Firebase]()
-- [CRUD]() - El ejemplo consiste en una lista de contactos donde se pueden leer los contactos existentes, ingresar nuevos contactos, eliminar contactos, y editar los contactos que ya están en la DB. Todos los cambios se ven reflejados en tiempo real.
-- [Autenticación desde redes sociales - GitHub]() - La red social habilitada desde la configuración de este proyecto para experimentar en este punto es GitHub.
-- [Alta de usuarios y autenticación con correo electrónico]()
-- [Almacenamiento de archivos en Firebase]() - Es necesario estar previamente autenticado con correo electrónico o GitHub.
+- [Hola Mundo desde Firebase](https://hugo-ff.github.io/Backend-con-Firebase/0_hola-mundo.html)
+- [CRUD](https://hugo-ff.github.io/Backend-con-Firebase/1_crud.html) - El ejemplo consiste en una lista de contactos donde se pueden leer los contactos existentes, ingresar nuevos contactos, eliminar contactos, y editar los contactos que ya están en la DB. Todos los cambios se ven reflejados en tiempo real.
+- [Autenticación desde redes sociales - GitHub](https://hugo-ff.github.io/Backend-con-Firebase/2_autenticacion_social.html) - La red social habilitada desde la configuración de este proyecto para experimentar en este punto es GitHub.
+- [Alta de usuarios y autenticación con correo electrónico](https://hugo-ff.github.io/Backend-con-Firebase/3_autenticacion_email.html)
+- [Almacenamiento de archivos en Firebase](https://hugo-ff.github.io/Backend-con-Firebase/4_almacenamiento.html) - Es necesario estar previamente autenticado con correo electrónico o GitHub.
 
 ## Construido con 🛠️
 

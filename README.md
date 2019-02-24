@@ -1,17 +1,17 @@
 # Back-end con Firebase
 
-_Este proyecto tiene como finalidad la comprensión del funcionamiento del servicio de back-end de Firebase para crear webs dinámicas._
+_Este proyecto tiene como finalidad la comprensión del uso del servicio de back-end de Firebase para crear webs dinámicas._
 
 ## Comenzando 🚀
 
-_Estas instrucciones te permitirán obtener una copia del proyecto en funcionamiento en tu máquina local para propósitos de desarrollo, pruebas y aprendizaje._
+_Estas instrucciones le permitirán obtener una copia del proyecto en funcionamiento en su máquina local para propósitos de desarrollo, pruebas y aprendizaje._
 
 
 ### Pre-requisitos 📋
 
-_Firebase es un servicio de back-end en la nube que no requiere tener nada pre-instalado para su funcionamiento, sino que lo consumimos con JavaScript desde el front-end._
+_Firebase es un servicio de back-end en la nube que no requiere tener nada pre-instalado de forma local para su funcionamiento, sino que lo todo será consumido con JavaScript desde el front-end._
 
-_También se puede trabajar mediante sus herramientas de desarrollo utilizando Node.js, pero no es la finalidad de éste proyecto. Si quiere instalar las herramientas de desarrollo de Firebase debe tener instalado [Node.js](https://nodejs.org/es/)._
+_También se puede trabajar mediante sus herramientas de desarrollo desde la terminal, pero no es la finalidad de éste proyecto. Si quiere instalar las herramientas de desarrollo de Firebase debe tener instalado [Node.js](https://nodejs.org/es/)._
 
 ```
 https://nodejs.org/es/
@@ -19,15 +19,9 @@ https://nodejs.org/es/
 
 ### Instalación 🔧
 
-_Desarrollar un proyecto igual que éste solo requiere que usted tenga una cuenta en Google y se dé de alta en los servicios de Firebase. Luego debe [ingresar a la consola](https://console.firebase.google.com) y crear un nuevo proyecto._
+_Desarrollar un proyecto igual que éste solo requiere poseer una cuenta en Google y darse de alta en los servicios de Firebase. Luego se debe [ingresar a la consola](https://console.firebase.google.com) y crear un nuevo proyecto._
 
-_Si quiere instalar las [herramientas de desarrollo](https://www.npmjs.com/package/firebase-tools?activeTab=versions) de Firebase debe abrir una terminal y ejecutar el siguiente comando:_
-
-```
-npm i -g firebase-tools
-```
-
-_Añadir Firebase a su aplicación web copiando y pegando el fragmento indicado en su código HTML. Debe generar este código desde su propia consola de Firebase para poder desarrollar su proyecto con la configuración propia del mismo._
+_Agregue Firebase a su aplicación web copiando y pegando el fragmento indicado en su código HTML. Debe generar este código desde su propia consola de Firebase para poder desarrollar su proyecto con la configuración propia del mismo (su propia apiKey, su propia URL de DB, etc.)._
 
 ```
 <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
@@ -58,27 +52,35 @@ _En este paso es necesario configurar las reglas de seguridad para la DB. Para l
 }
 ```
 
-_Para acceder a la base de datos de Firebase y trabajar sobre ella debe instanciarla_
+_Para acceder a la base de datos de Firebase y trabajar sobre ella debe instanciarla dentro de su script:_
 
 ```
 db = firebase.database()
 ```
 
-_Para generar los archivos necesarios para trabajar adecuadamente ejecute desde una terminal:_
+_Es conveniente generar desde las [herramientas de desarrollo](https://www.npmjs.com/package/firebase-tools?activeTab=versions) los archivos necesarios para trabajar adecuadamente._
+
+_Si quiere instalar las [herramientas de desarrollo](https://www.npmjs.com/package/firebase-tools?activeTab=versions) de Firebase debe abrir una terminal y ejecutar el siguiente comando:_
+
+```
+npm i -g firebase-tools
+```
+
+_Luego debe autenticarse ejecutando el siguiente comando:_
 
 ```
 firebase login
 ```
 
-_Una vez ingresadas sus credenciales, dentro del directorio del proyecto ejecute el siguiente comando para iniciar un proyecto Firebase y siga los pasos de configuración:_
+_Una vez ingresadas sus credenciales, muévase al directorio del proyecto y ejecute el siguiente comando para iniciar un proyecto Firebase y siga los pasos de configuración:_
 
 ```
 firebase init
 ```
 
-_Se instalarán todas las dependencias necesarias y se crearán los archivos de configuración. A partir de aquí ya se puede comenzar el desarrollo de nuestra aplicación usando Firebase._
+_Se instalarán todas las dependencias necesarias y se crearán los archivos de configuración. A partir de aquí ya puede comenzar el desarrollo de la aplicación usando Firebase como back-end._
 
-_Para entornos de desarrollo local será necesario levantar un servidor en algunos casos como puede ser la prueba de autenticaciones. Puede instalar [http-server](https://www.npmjs.com/package/http-server) desde una terminal ejecutando el siguiente comando:_
+_En algunos casos como puede ser la prueba de autenticaciones será necesario levantar un servidor de desarrollo. Puede instalar [http-server](https://www.npmjs.com/package/http-server) desde una terminal ejecutando el siguiente comando:_
 
 ```
 npm install http-server -g
@@ -92,7 +94,7 @@ http-server
 
 ## Ejemplos de uso⚙️
 
-Este proyecto contiene 5 simples aplicativos que sirven para comprender el funcionamiento de Firebase:_
+_Este proyecto contiene 5 simples aplicativos que sirven para comprender el uso de Firebase:_
 
 - [Hola Mundo desde Firebase]()
 - [CRUD]() - El ejemplo consiste en una lista de contactos donde se pueden leer los contactos existentes, ingresar nuevos contactos, eliminar contactos, y editar los contactos que ya están en la DB. Todos los cambios se ven reflejados en tiempo real.
